@@ -3,30 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Makinat</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <title>Info Cars - Baza e të Dhënave të Auto</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f4f6f9; color: #333; padding-bottom: 50px; }
+        header { background: #1e293b; color: white; text-align: center; padding: 2rem 1rem; }
+        header h1 { font-size: 2.2rem; margin-bottom: 10px; }
+        
+        .search-container { max-width: 600px; margin: -20px auto 30px auto; padding: 0 15px; }
+        .search-box { display: flex; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-radius: 30px; overflow: hidden; }
+        .search-box input { flex: 1; padding: 15px 20px; border: none; font-size: 16px; outline: none; }
+        .search-box button { background: #2563eb; color: white; border: none; padding: 0 25px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .search-box button:hover { background: #1d4ed8; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .brand-section { margin-bottom: 40px; }
+        .brand-title { font-size: 1.8rem; border-bottom: 3px solid #2563eb; display: inline-block; padding-bottom: 5px; margin-bottom: 20px; color: #0f172a; }
+        
+        .cars-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+        .car-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.07); transition: transform 0.2s; }
+        .car-card:hover { transform: translateY(-5px); }
+        .car-card img { width: 100%; height: 180px; object-fit: cover; }
+        .car-info { padding: 15px; }
+        .car-info h3 { font-size: 1.2rem; margin-bottom: 10px; color: #1e293b; }
+        .car-info p { font-size: 0.9rem; color: #64748b; margin-bottom: 5px; }
+        .car-info span { font-weight: bold; color: #0f172a; }
+        .no-results { text-align: center; font-size: 1.2rem; color: #64748b; margin-top: 40px; }
+    </style>
 </head>
 <body>
 
-    <nav class="navbar">
-        <a href="/">Kryefaqja</a>
-        <a href="/about">Rreth Meje</a>
-    </nav>
+    <header>
+        <h1>🏎️ Info Cars Albania</h1>
+        <p>Eksploro markat dhe specifikimet teknike të makinave më të njohura</p>
+    </header>
 
-    <div class="content">
-        <h1>Lista e Makinave</h1>
+    <div class="search-container">
+        <form action="/" method="GET" class="search-box">
+            <input type="text" name="search" placeholder="Kërko markën ose modelin (p.sh. Panamera, Audi, M5)..." value="{{ search_query }}">
+            <button type="submit">Kërko</button>
+        </form>
+    </div>
 
-        {% for car in cars %}
-            <div style="border: 1px solid #ddd; padding: 20px; margin: 20px auto; max-width: 500px; border-radius: 10px; background: white; text-align: left; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                <img src="{{ car.image }}" alt="{{ car.brand }}" style="width: 100%; border-radius: 8px;">
-                <h2 style="color: #2c3e50; margin-top: 15px;">{{ car.brand }} {{ car.model }} ({{ car.year }})</h2>
-                <p><strong>Motori:</strong> {{ car.engine }}</p>
-                <p><strong>Fuqia:</strong> {{ car.power }}</p>
-                <p><strong>Konsumi (100 km):</strong> {{ car.consumption_100 }}</p>
-                <p><strong>Konsumi (1000 km):</strong> {{ car.consumption_1000 }}</p>
-                <p><strong>Çmimi:</strong> {{ car.price }}</p>
-            </div>
-        {% endfor %}
+    <div class="container">
+        {% if brands %}
+            {% for brand, cars in brands.items() %}
+                <div class="brand-section">
+                    <h2 class="brand-title">{{ brand }}</h2>
+                    <div class="cars-grid">
+                        {% for car in cars %}
+                            <div class="car-card">
+                                <img src="{{ car.image }}" alt="{{ car.model }}">
+                                <div class="car-info">
+                                    <h3>{{ brand }} {{ car.model }}</h3>
+                                    <p>Viti: <span>{{ car.year }}</span></p>
+                                    <p>Motorri: <span>{{ car.engine }}</span></p>
+                                    <p>Fuqia: <span>{{ car.power }}</span></p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="no-results">Nuk u gjet asnjë makinë për kërkimin "{{ search_query }}". Provo një kërkim tjetër!</p>
+        {% endif %}
     </div>
 
 </body>
